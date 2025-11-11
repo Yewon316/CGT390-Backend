@@ -16,8 +16,8 @@ function checkPart(b) {
     if (!b) return { ok:false, msg:"Missing" };
     if (b.name  !== undefined && !isString(b.name))   return { ok:false, msg:"Invalid name" };
     if (b.major !== undefined && !isString(b.major))  return { ok:false, msg:"Invalid major" };
-    if (b.year  !== undefined && !isYear(b.year))     return { ok:false, msg:"Invalid year (1–4)" };
-    if (b.gpa   !== undefined && !isGpa(b.gpa))       return { ok:false, msg:"Invalid gpa (0–4)" };
+    if (b.year  !== undefined && !isYear(b.year))     return { ok:false, msg:"Invalid year" };
+    if (b.gpa   !== undefined && !isGpa(b.gpa))       return { ok:false, msg:"Invalid gpa" };
     return { ok:true };
 }
 
