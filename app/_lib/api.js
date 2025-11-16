@@ -1,36 +1,60 @@
-function normalize(raw) {
-    return {
-      id: String(raw.id),
-      name: raw.name || "Unknown",
-      email: raw.email || "",
-      title: raw.title || "",
-      bio: raw.bio || "",
-      image: raw.image_url || "",
+import prisma from "./prisma";
+
+
+function normalize(row) {
+  return {
+    id: String(row.id),
+    name: row.name || "Unknown",
+    email: row.email || "",
+    title: row.title || "",
+    bio: row.bio || "",
+    image: row.image_url || "", 
+  };
+}
+
+export async function fetchTitles() {
+  const rows = await prisma.profiles.findMany({
+    select: { title: true },
+    distinct: ["title"],
+    orderBy: { title: "asc" },
+  });
+
+  return rows.map(function (row) {
+    return row.title;
+  });
+}
+
+
+export async function fetchProfiles(title, search) {
+  var where = {};
+
+  if (typeof title === "string" && title.trim() !== "") {
+    where.title = title; 
+  }
+
+  if (typeof search === "string" && search.trim() !== "") {
+    where.name = {
+      contains: search,
+      mode: "insensitive",
     };
   }
-  
-  export async function fetchTitles() {
-    const res = await fetch("https://web.ics.purdue.edu/~zong6/profile-app/get-titles.php", { cache: "force-cache" });
-    const data = await res.json();
-    return Array.isArray(data?.titles) ? data.titles : [];
-  }
-  
-  export async function fetchProfiles(title, search) {
-    const url =
-      title === "" && search.trim() === ""
-        ? "https://web.ics.purdue.edu/~zong6/profile-app/fetch-data.php"
-        : "https://web.ics.purdue.edu/~zong6/profile-app/fetch-data-with-filter.php"
-          + `?title=${encodeURIComponent(title)}&name=${encodeURIComponent(search)}&page=1&limit=10`;
-  
-    const res = await fetch(url, { cache: "force-cache" });
-    const data = await res.json();
-    const raw = Array.isArray(data) ? data : (data && data.profiles) || [];
-    if (!Array.isArray(raw)) return [];
-    return raw.map(normalize);
-  }
-  
-  export async function fetchProfileById(id) {
-    const all = await fetchProfiles("", "");
-    return all.find(p => p.id === String(id)) || null;
-  }
-  
+
+  const rows = await prisma.profiles.findMany({
+    where: where,
+    orderBy: { id: "desc" },
+  });
+
+  return rows.map(normalize);
+}
+
+export async function fetchProfileById(id) {
+  const n = Number(id);
+  if (!Number.isInteger(n)) return null;
+
+  const row = await prisma.profiles.findUnique({
+    where: { id: n },
+  });
+
+  if (!row) return null;
+  return normalize(row);
+}
