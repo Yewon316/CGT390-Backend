@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Profiles",
-  description: "for cgt390-backend",
+  description: "cgt390-backend",
 };
 
 

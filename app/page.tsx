@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { fetchTitles, fetchProfiles } from "./_lib/api";
+import DeleteButton from "@/components/DeleteButton";
 
 export const metadata = { title: "Profiles" };
 
@@ -15,9 +16,9 @@ type SearchParams = { [key: string]: string | string[] | undefined };
 export default async function Home({
   searchParams,
 }: {
-  searchParams?: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
-  const sp = searchParams || {};
+  const sp = (await searchParams) || {};
   const title = typeof sp.title === "string" ? sp.title : "";
   const search = typeof sp.search === "string" ? sp.search : "";
 
@@ -28,11 +29,11 @@ export default async function Home({
 
   return (
     <section className="container">
-      <h1 className="page-title">Profiles</h1>
+      <h1 className="page-title">profiles</h1>
 
       <form className="filters" action="/">
         <select name="title" defaultValue={title}>
-          <option value="">All titles</option>
+          <option value="">all titles</option>
           {titles.map((t: string) => (
             <option key={t} value={t}>
               {t}
@@ -42,7 +43,7 @@ export default async function Home({
 
         <input
           name="search"
-          placeholder="Search name…"
+          placeholder="Search name"
           defaultValue={search}
         />
         <button type="submit">Enter</button>
@@ -50,6 +51,7 @@ export default async function Home({
           Reset
         </a>
       </form>
+      
 
       <ul className="grid">
         {items.map((p: Profile) => (

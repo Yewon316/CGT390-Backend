@@ -1,26 +1,31 @@
-// `use Client`
-// import {useState} from "react"
+"use client";
 
-// export default function DeleteButton({id}){
-//     const [isDeleting,setIsDeleting] = useState(false);
-//     const [error,setError] = useState("");
-//     const router = useRouter();
-//     const handleClicked = async () => {
-//         setIsDeleting(true);
-//         try{
-//             const response = await fetch(`/api/profiles/${id}`),{
-//                 method:"DELETE"
-//             })
-//             if(!response.ok){
-//                 const errorData = await response.json();
-//             }
-//         }
-//     }
+import { useRouter } from "next/navigation";
 
-//     return(
-//         <>
-//         <button onClick={handleClicked} disabled={isDeleting}>Delete</button>
-//         {error??<p>{error}</p>}
-//         </>
-//     )
-// }
+export default function DeleteButton({ id }) {
+  const router = useRouter();
+
+  async function handleClicked() {
+    const res = await fetch(`/api/profiles/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      console.error("Failed", res.status);
+      return;
+    }
+
+    router.push("/");
+    router.refresh();
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClicked}
+      style={{ marginLeft: 8, color: "red" }}
+    >
+        Delete
+    </button>
+  );
+}

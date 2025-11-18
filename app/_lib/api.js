@@ -48,12 +48,21 @@ export async function fetchProfiles(title, search) {
 }
 
 export async function fetchProfileById(id) {
-  const n = Number(id);
-  if (!Number.isInteger(n)) return null;
+  const n = parseInt(String(id), 10);
+
+
+  if (Number.isNaN(n)) {
+    console.log("invalid id", id);
+    return null;
+  }
+
+  console.log("looking for id", n);
 
   const row = await prisma.profiles.findUnique({
     where: { id: n },
   });
+
+  console.log("row", row);
 
   if (!row) return null;
   return normalize(row);
