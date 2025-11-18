@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { fetchProfileById } from "@/app/_lib/api";
 import DeleteButton from "@/components/DeleteButton";
+import prisma from "@/app/_lib/prisma";
 
 
 type PageProps = {

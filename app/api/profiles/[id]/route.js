@@ -1,80 +1,89 @@
-if (!global.profiles) {
-    global.profiles = [
-        { id: 1, name: "Ava Lee",  major: "CS",  year: 2, gpa: 3.6 },
-        { id: 2, name: "Ben Park", major: "CGT", year: 3, gpa: 3.2 },
-    ];
-}
-function list() { return global.profiles; }
+import { NextResponse } from "next/server";
+import prisma from "@/app/_lib/prisma";
 
+function getId(params) {
+  if (!params || typeof params.id === "undefined") {
+    return null;
+  }
 
-    function isString(x) { return typeof x === "string" && x.trim().length > 0; }
-    function isYear(x)   { var n = Number(x); return Number.isInteger(n) && n >= 1 && n <= 4; }
-    function isGpa(x)    { var n = Number(x); return Number.isFinite(n) && n >= 0 && n <= 4; }
-    function parseId(x)  { var n = Number(x); return Number.isInteger(n) && n > 0 ? n : null; }
+  const id = Number(params.id);
+  if (!Number.isFinite(id)) {
+    return null;
+  }
 
-function checkPart(b) {
-    if (!b) return { ok:false, msg:"Missing" };
-    if (b.name  !== undefined && !isString(b.name))   return { ok:false, msg:"Invalid name" };
-    if (b.major !== undefined && !isString(b.major))  return { ok:false, msg:"Invalid major" };
-    if (b.year  !== undefined && !isYear(b.year))     return { ok:false, msg:"Invalid year" };
-    if (b.gpa   !== undefined && !isGpa(b.gpa))       return { ok:false, msg:"Invalid gpa" };
-    return { ok:true };
+  return id;
 }
 
-function findIndexById(id) {
-    var arr = list();
-    for (var i = 0; i < arr.length; i++) {
-        if (arr[i].id === id) return i;
+export async function GET(_req, { params }) {
+    const id = getId(params);
+
+if (id === null) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
+
+  try {
+    const row = await prisma.profiles.findUnique({
+      where: { id },
+    });
+
+    if (!row) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    return -1;
+
+    return NextResponse.json(row);
+  } catch (err) {
+    console.error("GET /api/profiles/[id] error:", err);
+    return NextResponse.json(
+        { error: "Failed to load profile" },
+        { status: 500 }
+    );
+  }
 }
 
-// GET
-export async function GET(_req, ctx) {
-    var id = parseId(ctx.params.id);
-    if (id === null) return Response.json({ error:"Invalid id" }, { status:400 });
+export async function PUT(req, { params }) {
+    const id = getId(params);
 
-    var idx = findIndexById(id);
-    if (idx === -1) return Response.json({ error:"Not found" }, { status:404 });
-
-    return Response.json(list()[idx]);
+if (id === null) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 }
 
-// PUT
-export async function PUT(req, ctx)  { return update(req, ctx); }
-export async function PATCH(req, ctx){ return update(req, ctx); }
+try {
+    const body = await req.json();
 
-async function update(request, ctx) {
-    var id = parseId(ctx.params.id);
-    if (id === null) return Response.json({ error:"Invalid id" }, { status:400 });
+    const updated = await prisma.profiles.update({
+      where: { id },
+      data: {
+        name: body.name,
+        email: body.email,
+        title: body.title,
+        bio: body.bio,
+      },
+    });
 
-    var idx = findIndexById(id);
-    if (idx === -1) return Response.json({ error:"Not found" }, { status:404 });
-
-    var body;
-    try { body = await request.json(); }
-    catch { return Response.json({ error:"Invalid" }, { status:400 }); }
-
-    var v = checkPart(body);
-    if (!v.ok) return Response.json({ error:v.msg }, { status:400 });
-
-    var item = list()[idx];
-    if (body.name  !== undefined) item.name  = body.name;
-    if (body.major !== undefined) item.major = body.major;
-    if (body.year  !== undefined) item.year  = Number(body.year);
-    if (body.gpa   !== undefined) item.gpa   = Number(body.gpa);
-
-    return Response.json(item); 
+    return NextResponse.json(updated);
+} catch (err) {
+    console.error("PUT /api/profiles/[id] error:", err);
+    return NextResponse.json(
+        { error: "Failed to update profile" },
+        { status: 500 }
+    );
 }
+}
+export async function DELETE(_req, { params }) {
+    try {
+        console.log("DELETE /api/profiles/[id] params =", params);
 
-// DELETE
-export async function DELETE(_req, ctx) {
-    var id = parseId(ctx.params.id);
-    if (id === null) return Response.json({ error:"Invalid id" }, { status:400 });
+    const id = Number(params.id);
+    const deleted = await prisma.profiles.deleteMany({
+        where: { id },
+    });
 
-    var idx = findIndexById(id);
-    if (idx === -1) return Response.json({ error:"Not found" }, { status:404 });
-
-    list().splice(idx, 1);
-    return Response.json({ success:true });
+    return NextResponse.json({ ok: true, deleted });
+    } catch (err) {
+        console.error("DELETE /api/profiles/[id] error:", err);
+        return NextResponse.json(
+        { error: "Failed to delete profile" },
+        { status: 500 }
+    );
+    }
 }

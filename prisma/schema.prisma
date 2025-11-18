@@ -7,15 +7,34 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
-model Profiles {
-  id        Int      @id @default(autoincrement())
-  name      String
-  title     String
-  email     String   @unique
-  bio       String
+model Students{
+  id Int @id @default(autoincrement())
+  name String
+  major String
+  year Int
+  gpa Float
+}
+
+model Profiles{
+  id Int @id @default(autoincrement())
+  name String
+  title String
+  email String @unique
+  bio String
   image_url String
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+model User{
+  id String @id@default(cuid())
+  email String @unique
+  password String?
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
 }
