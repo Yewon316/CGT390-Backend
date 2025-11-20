@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/app/_lib/prisma";
+import prisma from "@/lib/prisma";
 
 function getId(params) {
   if (!params || typeof params.id === "undefined") {
