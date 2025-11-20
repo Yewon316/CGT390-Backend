@@ -12,13 +12,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model Students{
-  id Int @id @default(autoincrement())
-  name String
-  major String
-  year Int
-  gpa Float
-}
 
 model Profiles{
   id Int @id @default(autoincrement())
@@ -32,7 +25,7 @@ model Profiles{
 }
 
 model User{
-  id String @id@default(cuid())
+  id String @id @default(cuid())
   email String @unique
   password String?
   createAt DateTime @default(now())

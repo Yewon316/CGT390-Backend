@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fetchTitles, fetchProfiles } from "./_lib/api";
+import { fetchTitles, fetchProfiles } from "@/lib/api";
 import DeleteButton from "@/components/DeleteButton";
 
 export const metadata = { title: "Profiles" };
