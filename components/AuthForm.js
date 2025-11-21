@@ -130,6 +130,15 @@ const AuthForm = () => {
           {isLogin ? "Register" : "Sign In"}
         </button>
       </div>
+      <p className={styles.separator}>or</p>
+      <div className = {styles.socialLogin}>
+        <button className={styles.socialButton} onClick={() => signIn("github",{callbackUrl})}>
+        continue with Github
+        </button>
+        <button className={styles.socialButton} onClick={() => signIn("google",{callbackUrl})}>
+        continue with google
+        </button>
+      </div>
     </>
   );
 };
