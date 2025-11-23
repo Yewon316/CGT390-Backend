@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import styles from "./Navbar.module.css"; // //Your stylesheet
+import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
 
   return (
     <nav className={`${styles.navbar} section`}>
-      {/* ... other nav content ... */}
       <div className={styles.authSection}>
         {status === "loading" ? (
           <span>Loading...</span>

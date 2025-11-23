@@ -7,7 +7,8 @@ export default function NavBar() {
         <Link href="/">Home</Link> {" | "}
         <Link href="/about">About</Link> {" | "}
         <Link href="/contact">Contact</Link> {" | "}
-        <Link href="/add-profile">Add profile</Link>
+        <Link href="/add-profile">Add profile</Link>{" | "}
+        <Link href="/api/auth/signin">Sign In</Link>
     </nav>
 );
 }
