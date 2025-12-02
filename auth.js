@@ -6,9 +6,12 @@ import prisma from "@/lib/prisma";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
 
+
+console.log("AUTH_GITHUB_ID =", process.env.AUTH_GITHUB_ID);
+console.log("AUTH_GITHUB_SECRET =", process.env.AUTH_GITHUB_SECRET);
 export const {
   auth,     // for server components & middleware
-  handlers, // for route handlers (GET, POST)
+  handlers, // GET, POST
 } = NextAuth({
   providers: [
     Credentials({
@@ -46,10 +49,7 @@ export const {
       clientId: process.env.AUTH_GOOGLE_ID || "",
       clientSecret: process.env.AUTH_GOOGLE_SECRET || "",
     }),
-    GitHub({
-      clientId: process.env.AUTH_GITHUB_ID || "",
-      clientSecret: process.env.AUTH_GITHUB_SECRET || "",
-    }),
+    GitHub,
   ],
   pages:{
     signIn: '/auth/signin',
@@ -61,7 +61,7 @@ export const {
       const isProtectedRoute = path.startsWith('/add-profile') || 
                               (path.startsWith('/profile/') && path.endsWith('/edit'));
       if (isProtectedRoute && !isLoggedIn) {
-        return false; // Redirect to sign-in page
+        return false;
       }
       return true;
     },
